@@ -561,7 +561,7 @@ def show_directory_brother(name):
         return flask.redirect(flask.url_for("show_portal_directory"))
     bro = dict(bro)
     bro["line_name"] = line_int_to_line[str(bro["line"])]
-    bro['grad_time_display'] = datetime.strptime(bro['grad_time'], '%Y-%m').strftime('%B %Y') if bro.get('grad_time') and re.match(r'^\d{4}-(0[1-9]|1[0-2])$', bro['grad_time']) else (bro.get('grad_time') or '—')
+    bro['grad_time_display'] = datetime.strptime(bro['grad_time'], '%Y-%m').strftime('%B %Y') if bro.get('grad_time') else '—'
 
     # Get all lion names for dropdown
     cur = con.execute("SELECT lion_name_id, name FROM lion_names ORDER BY name")
@@ -609,12 +609,13 @@ def edit_member(name):
     cross_time = flask.request.form['cross_time']
     grad_time = flask.request.form['grad_time']
 
-    # Validate date fields (yyyy-mm)
-    date_re = re.compile(r'^\d{4}-(0[1-9]|1[0-2])$')
-    if cross_time and not date_re.match(cross_time):
-        flask.flash('Cross time must be in yyyy-mm format (e.g. 2023-04).', 'error')
+    # Validate date fields
+    cross_re = re.compile(r"^SP' \d{4}$")
+    grad_re = re.compile(r'^\d{4}-(0[1-9]|1[0-2])$')
+    if cross_time and not cross_re.match(cross_time):
+        flask.flash("Cross time must be in SP' YYYY format (e.g. SP' 2024).", 'error')
         return flask.redirect(flask.url_for('show_directory_brother', name=name))
-    if grad_time and not date_re.match(grad_time):
+    if grad_time and not grad_re.match(grad_time):
         flask.flash('Grad time must be in yyyy-mm format (e.g. 2025-04).', 'error')
         return flask.redirect(flask.url_for('show_directory_brother', name=name))
 

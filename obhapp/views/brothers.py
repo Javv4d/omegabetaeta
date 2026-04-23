@@ -40,7 +40,7 @@ def show_brother(name):
     if not bro:
         flask.abort(404)
     bro["line_name"] = line_int_to_line[str(bro["line"])]
-    bro['grad_time'] = datetime.strptime(bro['grad_time'], '%Y-%m').strftime('%B %Y') if bro.get('grad_time') and re.match(r'^\d{4}-(0[1-9]|1[0-2])$', bro['grad_time']) else (bro.get('grad_time') or None)
+    bro['grad_time'] = datetime.strptime(bro['grad_time'], '%Y-%m').strftime('%B %Y') if bro.get('grad_time') else None
 
     # Get public contacts only
     all_contacts = get_contacts_for_user(con, bro['user_id'])

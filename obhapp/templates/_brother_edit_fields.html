@@ -54,12 +54,25 @@
     </div>
     <div class="form-group">
         <label for="edit-cross-time">Cross Time</label>
-        <input type="text" class="form-control date-field" id="edit-cross-time" name="cross_time" value="{{ brother['cross_time'] if brother is mapping else brother.cross_time }}" placeholder="e.g. 2023-04" pattern="\d{4}-(0[1-9]|1[0-2])">
+        {% set current_cross = brother['cross_time'] if brother is mapping else brother.cross_time %}
+        <div class="custom-select-wrapper">
+            <select class="form-control" id="edit-cross-time" name="cross_time">
+                <option value="">Select Cross Time</option>
+                {% for year in range(2030, 2017, -1) %}
+                {% set opt = "SP' " ~ year %}
+                <option value="{{ opt }}" {% if current_cross == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+                {% if current_cross and not current_cross.startswith("SP' ") %}
+                <option value="{{ current_cross }}" selected>{{ current_cross }}</option>
+                {% endif %}
+            </select>
+            <i class="fas fa-chevron-down custom-select-arrow"></i>
+        </div>
     </div>
     {% endif %}
     <div class="form-group">
         <label for="{{ 'edit-' if is_admin_edit else '' }}grad_time">Grad Time</label>
-        <input type="text" class="form-control{{ fc }} date-field" id="{{ 'edit-' if is_admin_edit else '' }}grad_time" name="grad_time" value="{{ brother['grad_time'] if brother is mapping else (brother.grad_time or '') }}" placeholder="e.g. 2025-04" pattern="\d{4}-(0[1-9]|1[0-2])">
+        <input type="text" class="form-control{{ fc }} date-field grad-time-field" id="{{ 'edit-' if is_admin_edit else '' }}grad_time" name="grad_time" value="{{ brother['grad_time'] if brother is mapping else (brother.grad_time or '') }}" placeholder="e.g. 2025-04" inputmode="numeric" maxlength="7" pattern="\d{4}-(0[1-9]|1[0-2])">
     </div>
     <div class="form-group">
         <label for="{{ 'edit-' if is_admin_edit else '' }}active">Activity Status</label>
@@ -76,3 +89,23 @@
     <label for="{{ 'edit-' if is_admin_edit else '' }}desc">Description</label>
     <textarea class="form-control auto-resize{{ fc }}" id="{{ 'edit-' if is_admin_edit else '' }}desc" name="desc" rows="3" placeholder="A short bio about {{ 'this member' if is_admin_edit else 'yourself' }}...">{{ brother['desc'] if brother is mapping else brother.desc }}</textarea>
 </div>
+<script>
+(function() {
+    document.querySelectorAll('.grad-time-field').forEach(function(input) {
+        if (input.dataset.gradFmt) return;
+        input.dataset.gradFmt = '1';
+        input.addEventListener('input', function(e) {
+            var raw = e.target.value;
+            var digits = raw.replace(/\D/g, '').slice(0, 6);
+            var endsWithDash = /-\s*$/.test(raw);
+            if (digits.length > 4) {
+                e.target.value = digits.slice(0, 4) + '-' + digits.slice(4);
+            } else if (digits.length === 4 && endsWithDash) {
+                e.target.value = digits + '-';
+            } else {
+                e.target.value = digits;
+            }
+        });
+    });
+})();
+</script>
