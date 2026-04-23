@@ -99,7 +99,7 @@
     <div id="editMode" style="display:none;">
         <div class="member-profile-card">
             <div class="member-profile-header">
-                <div class="member-profile-avatar pfp-clickable" onclick="document.getElementById('edit-profile-picture-input').click()" title="Click to change profile picture">
+                <div id="brotherPfpTrigger" class="member-profile-avatar pfp-clickable" title="Click to change profile picture">
                     <img id="editPfpPreview" src="/uploads/{{ brother.profile_picture or 'default.jpg' }}" alt="{{ brother.fullname }}">
                     <div class="pfp-overlay"><i class="fas fa-camera"></i></div>
                 </div>
@@ -109,7 +109,7 @@
             </div>
             <div class="member-profile-body">
                 <form action="/portal/directory/{{ brother.username }}/edit/" method="post" enctype="multipart/form-data">
-                    <input type="file" id="edit-profile-picture-input" name="profile_picture" accept="image/*" style="display:none;" onchange="previewEditPfp(this)">
+                    <input type="file" id="edit-profile-picture-input" name="profile_picture" accept="image/*" style="display:none;">
                     {% with is_admin_edit=true %}
                     {% include '_brother_edit_fields.html' %}
                     {% endwith %}
@@ -145,6 +145,10 @@
         {% endif %}
     </div>
     {% endif %}
+
+    {% if can_edit %}
+    {% include '_pfp_editor.html' %}
+    {% endif %}
 </div>
 
 <script>
@@ -162,15 +166,13 @@ function validateEditContacts() {
     return validateContactsIn('editContactsList');
 }
 
-function previewEditPfp(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('editPfpPreview').src = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+{% if can_edit %}
+initPfpEditor({
+    triggerId:    'brotherPfpTrigger',
+    formInputId:  'edit-profile-picture-input',
+    previewImgId: 'editPfpPreview'
+});
+{% endif %}
 
 // Submit contacts with the edit form
 var editForm = document.querySelector('#editMode form');

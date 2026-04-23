@@ -15,6 +15,19 @@ from obhapp.email_utils import (
 )
 
 
+PFP_MAX_BYTES = 2 * 1024 * 1024
+
+
+def _pfp_too_large(file):
+    """Return True if the uploaded profile picture exceeds the 2 MB cap."""
+    if not file or not file.filename:
+        return False
+    file.stream.seek(0, 2)
+    size = file.stream.tell()
+    file.stream.seek(0)
+    return size > PFP_MAX_BYTES
+
+
 @obhapp.app.before_request
 def check_forced_password_change():
     """Redirect to forced password change page if user hasn't changed default password."""
@@ -200,6 +213,9 @@ def edit_profile():
             return flask.redirect(flask.url_for('edit_profile'))
 
         file = flask.request.files.get("profile_picture")
+        if _pfp_too_large(file):
+            flask.flash('Profile picture must be 2 MB or smaller.', 'error')
+            return flask.redirect(flask.url_for('edit_profile'))
         if file and file.filename:
             filename = file.filename
             stem = uuid.uuid4().hex
@@ -608,6 +624,9 @@ def edit_member(name):
     active = flask.request.form.get('active', 0)
 
     file = flask.request.files.get("profile_picture")
+    if _pfp_too_large(file):
+        flask.flash('Profile picture must be 2 MB or smaller.', 'error')
+        return flask.redirect(flask.url_for('show_directory_brother', name=name))
     if file and file.filename:
         stem = uuid.uuid4().hex
         suffix = pathlib.Path(file.filename).suffix.lower()

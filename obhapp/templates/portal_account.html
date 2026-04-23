@@ -7,7 +7,7 @@
     <!-- Profile Section -->
     <div class="member-profile-card">
         <div class="member-profile-header">
-            <div class="member-profile-avatar pfp-clickable" onclick="document.getElementById('profile_picture').click()" title="Click to change profile picture">
+            <div id="accountPfpTrigger" class="member-profile-avatar pfp-clickable" title="Click to change profile picture">
                 <img id="pfpPreview" src="/uploads/{{ brother['profile_picture'] or 'default.jpg' }}" alt="{{ brother['fullname'] }}">
                 <div class="pfp-overlay"><i class="fas fa-camera"></i></div>
                 <span class="status-dot large {{ 'active' if brother['active'] else 'inactive' }}"></span>
@@ -21,7 +21,7 @@
         <div class="member-profile-body">
             <form id="edit-profile-form" action="{{ url_for('edit_profile') }}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="existing_profile_picture" value="{{ brother['profile_picture'] }}">
-                <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="previewPfp(this)">
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none;">
                 <input type="hidden" id="contacts_json" name="contacts_json" value="">
                         {% with is_admin_edit=false, field_class='profile-field' %}
                         {% include '_brother_edit_fields.html' %}
@@ -44,6 +44,8 @@
             </form>
         </div>
     </div>
+
+    {% include '_pfp_editor.html' %}
 
     <!-- Change Password Section -->
     <div class="member-profile-card mt-4">
@@ -110,17 +112,12 @@
         el.addEventListener('change', markDirty);
     });
 
-    // Profile picture preview
-    function previewPfp(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('pfpPreview').src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-            markDirty();
-        }
-    }
+    initPfpEditor({
+        triggerId:    'accountPfpTrigger',
+        formInputId:  'profile_picture',
+        previewImgId: 'pfpPreview',
+        onChange:     markDirty
+    });
 
     // ─── Form submission: include contacts ───
     document.getElementById('edit-profile-form').addEventListener('submit', function(e) {
