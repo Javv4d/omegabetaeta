@@ -2913,6 +2913,60 @@ h1, h2, h3, h4, h5, h6 {
   flex-wrap: wrap;
 }
 
+.lion-names-add-row .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.lion-names-add-row .form-group label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--portal-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+}
+
+.lion-names-add-row .form-control,
+.lion-name-edit-meaning .form-control {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--portal-border);
+  color: var(--portal-text);
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.88rem;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.lion-names-add-row .form-control::placeholder,
+.lion-name-edit-meaning .form-control::placeholder {
+  color: #555;
+}
+
+.lion-names-add-row .form-control:focus,
+.lion-name-edit-meaning .form-control:focus {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--portal-gold);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.15);
+  color: var(--portal-text);
+}
+
+@media (max-width: 600px) {
+  .lion-names-add-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lion-names-add-row .form-group {
+    width: 100%;
+  }
+  .lion-names-add-row .btn {
+    width: 100%;
+  }
+}
+
 .lion-name-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--portal-border);
